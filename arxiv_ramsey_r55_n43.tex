@@ -89,15 +89,15 @@ The boolean formula \texttt{ramsey.cnf} ($309$ variables, $275,608$ clauses, SHA
 
 \subsection{Conditioning Hypothesis: Correctness of the Propositional Encoder}
 
-Because the degree reduction and symmetry breaking schemes are mathematically sound in the abstract (Section \ref{sec:theory}), the certified computational result is conditioned strictly upon the correctness of the generated propositional formula:
+Because the degree reduction and symmetry breaking schemes are presented as an analytical proof sketch (Section \ref{sec:theory}), the certified computational result is conditioned upon the correctness of the generated propositional formula:
 
 \begin{hypothesis}[Correctness of the Propositional Encoder of Forbidden Subgraphs and Symmetry Breaking]
-The propositional clauses in \texttt{ramsey.cnf} soundly and completely encode:
+The propositional clauses in \texttt{ramsey.cnf} encode:
 \begin{enumerate}
     \item The forbidden monochromatic subgraph constraints (no red $K_5$ and no blue $K_5$ under $\mathbb{Z}_7$ invariance).
-    \item The symmetry breaking constraints established theoretically in Lemmas \ref{lem:block_convention}--\ref{lem:phase_shifts}.
+    \item The symmetry breaking constraints formulated theoretically in Lemmas \ref{lem:block_convention}--\ref{lem:phase_shifts}.
 \end{enumerate}
-The symmetry breaking scheme is proven sound in the abstract (Section \ref{sec:theory}); the computational result is conditional upon the premise that the generated propositional clauses faithfully implement these mathematical constraints (matching bit-order, comparator direction, and prohibited patterns).
+The symmetry breaking scheme is developed as an analytical proof sketch in Section \ref{sec:theory} (submitted for independent peer review); the computational result is conditional upon both the mathematical validity of this reduction and the premise that the generated propositional clauses faithfully implement these constraints (matching bit-order, comparator direction, and prohibited patterns).
 
 This hypothesis has been cross-validated through four complementary levels of verification:
 \begin{itemize}
@@ -118,10 +118,10 @@ This hypothesis has been cross-validated through four complementary levels of ve
 The encoder implementation has not been machine-checked inside an interactive proof assistant (such as Lean 4 or Coq).
 \end{hypothesis}
 
-\section{Theoretical Analysis: Sound Symmetry Reduction}
+\section{Theoretical Analysis: Symmetry Reduction (Proof Sketch)}
 \label{sec:theory}
 
-In this section, we show that the constraints added to \texttt{ramsey.cnf} (degree fixing on vertex 0 and lexicographic symmetry breaking) are sound without loss of generality.
+In this section, we present an analytical proof sketch that the constraints added to \texttt{ramsey.cnf} (degree fixing on vertex 0 and lexicographic symmetry breaking) preserve satisfiability without loss of generality.
 
 \subsection{Degree Rigidity of Fixed Points}
 
@@ -164,7 +164,7 @@ Since $f=1$, $d_F(0) = 0$, so $18 \le 7 \cdot k_{\text{red}}(0) \le 24$. For $k 
   \label{fig:structure}
 \end{figure}
 
-\subsection{Soundness of Block Assignment and Symmetry Breaking}
+\subsection{Proof Sketch for Block Assignment and Symmetry Breaking}
 
 \begin{lemma}[Orbit Labeling Convention]
 \label{lem:block_convention}
@@ -202,7 +202,7 @@ Furthermore:
         \item Orbit of weight 2: $\{(0,1,1), (1,0,1), (1,1,0)\}$, whose unique lexicographically minimal element is $(0,1,1)$.
     \end{itemize}
 \end{enumerate}
-Choosing $m \in \{1, 2, 4\}$ that achieves the minimal representative restricts $B_0$ to one of the 4 minimal patterns $(0,0,0), (0,0,1), (0,1,1), (1,1,1)$, soundly eliminating the 4 non-minimal patterns $(0,1,0), (1,0,0), (1,0,1), (1,1,0)$ via the 4 clauses of length 3.
+Choosing $m \in \{1, 2, 4\}$ that achieves the minimal representative restricts $B_0$ to one of the 4 minimal patterns $(0,0,0), (0,0,1), (0,1,1), (1,1,1)$, eliminating the 4 non-minimal patterns $(0,1,0), (1,0,0), (1,0,1), (1,1,0)$ via the 4 clauses of length 3.
 \end{proof}
 
 \begin{lemma}[Independent Phase Alignment on Free Blocks $B_1, \dots, B_5$]
@@ -228,7 +228,7 @@ Each map $\psi_{c_b}$ is an isomorphism from $G$ to an isomorphic graph $\psi_{c
 Because each phase shift $\psi_{c_b}$ acts exclusively on block $B_b$, the 5 shifts $\psi_{c_1}, \dots, \psi_{c_5}$ commute and act independently on the vectors $vec(0, 1, \cdot), \dots, vec(0, 5, \cdot)$. Choosing each $c_b \in \mathbb{Z}_7$ independently to select the minimal cyclic rotation establishes the existence of an isomorphic graph satisfying all 570 lexicographic clauses simultaneously.
 \end{proof}
 
-\begin{theorem}[Mathematical Soundness of the Symmetry Reduction]
+\begin{theorem}[Symmetry Reduction Scheme: Analytical Proof Sketch]
 \label{thm:soundness}
 If there exists a $(5,5,43)$-graph $G$ admitting an automorphism of order 7 with a unique fixed point, then there exists an isomorphic graph $G'$ that satisfies:
 \begin{enumerate}
@@ -242,7 +242,7 @@ Immediate from the sequence of isomorphisms constructed in Lemma \ref{lem:block_
 \end{proof}
 
 \begin{remark}[Implementation Fidelity of Symmetry Breaking]
-Theorem \ref{thm:soundness} establishes the mathematical soundness of the symmetry reduction scheme in the abstract. The property that the propositional clauses generated in \texttt{ramsey.cnf} faithfully implement these mathematical conditions (matching bit order, comparator orientation, and the list of prohibited patterns) is an implementation property. While not verified in an interactive theorem prover, this correspondence was validated empirically by exhaustive All-SAT enumeration on smaller orders ($n \le 22$ with $B \le 3$, covering instances with 0, 1, and 2 free blocks), where the generated clauses reduced the model count by the exact theoretical group orbit factors (3:1, 21:1, and 147:1) without eliminating any graph isomorphism classes.
+Theorem \ref{thm:soundness} provides an analytical proof sketch for the symmetry reduction scheme in the abstract, submitted for independent peer review. The property that the propositional clauses generated in \texttt{ramsey.cnf} faithfully implement these mathematical conditions (matching bit order, comparator orientation, and the list of prohibited patterns) is an implementation property. While not verified in an interactive theorem prover, this correspondence was validated empirically by exhaustive All-SAT enumeration on smaller orders ($n \le 22$ with $B \le 3$, covering instances with 0, 1, and 2 free blocks), where the generated clauses reduced the model count by the exact theoretical group orbit factors (3:1, 21:1, and 147:1) without eliminating any graph isomorphism classes.
 Moreover, an explicit structural census of all 574 symmetry breaking clauses in \texttt{ramsey.cnf} confirms that the implementation strictly mirrors this property: exactly 4 clauses of length 3 enforce the intra-block multiplier normalization on $B_0$ (Lemma \ref{lem:multiplier}), and exactly 114 clauses ($6 \text{ rotations} \times 19 \text{ comparator clauses}$) are generated for each anchor pair $(B_0, B_b)$ with $b \in \{1, \dots, 5\}$, totaling $5 \times 114 = 570$ clauses ($4 + 570 = 574$ clauses), while exactly \textbf{0 clauses} are generated for all $\binom{5}{2} = 10$ pairs of free blocks $(B_b, B_{b'})$ ($1 \le b < b' \le 5$).
 \end{remark}
 
@@ -301,6 +301,7 @@ We performed an exhaustive All-SAT solver enumeration on $n=22$ without symmetry
 \end{itemize}
 Fixing block 0 as the red block collapses the space by an exact factor of 3 (the 3 choices of the red block): from 15,876 to 5,292 models without symmetry breaking, and from 108 to 36 models with symmetry breaking, preserving all 9 isomorphism classes with an exact $147:1$ ratio ($147 = 49 \times 3 = |(\mathbb{Z}_7 \times \mathbb{Z}_7) \rtimes \mathbb{Z}_3|$).
 
+\clearpage
 \subsection{Partition Structure and Cost Profile of the 237 Certified Leaves}
 
 The certified refutation of \texttt{ramsey.cnf} is structured as a disjunctive partition of 237 leaves:
@@ -309,16 +310,14 @@ The certified refutation of \texttt{ramsey.cnf} is structured as a disjunctive p
     \item \textbf{Leaf 214 (Weight $2^{-9}$):} Subdivided into 4 subcubes of weight $2^{-11}$ each; subcube \texttt{c214\_m0} required 709.05~s in CaDiCaL emitting a 235.38~MiB DRAT trace, certified by \texttt{drat-trim} in 843.06~s (combined 1,552.10~s; \path{manifest_ramsey_c214.json}).
     \item \textbf{Leaf 202 (Weight $2^{-10}$):} Subdivided into 7 subcubes (3 of weight $2^{-12}$ and 4 of weight $2^{-14}$); subcube \texttt{c202\_m0\_s2} required 1,893.00~s in CaDiCaL emitting a 500.84~MiB DRAT trace, certified by \texttt{drat-trim} in 3,419.80~s (combined 5,312.80~s; \path{manifest_ramsey_c202.json}).
 \end{itemize}
-All 237 leaves are mutually orthogonal (pairwise checked across all $\binom{237}{2} = 27,966$ pairs), and their exact rational weights sum strictly to $\sum_{i=1}^{237} 2^{-|c_i|} = \frac{1}{1} = 1.0$. The master manifest is sealed under SHA-256 \sha{56ba1d74b3c2f016b9bb21e89bed06384550e840d9279c133b48abe24e5fd39c}.
+All 237 leaves are pairwise mutually orthogonal (verified across all $\binom{237}{2} = 27,966$ pairs), and their exact rational weights sum strictly to $\sum_{i=1}^{237} 2^{-|c_i|} = \frac{1}{1} = 1.0$, forming a complete partition. The master manifest is sealed under SHA-256 \sha{56ba1d74b3c2f016b9bb21e89bed06384550e840d9279c133b48abe24e5fd39c}. As illustrated in Figure \ref{fig:depth}, the partition spans cube depths from $|c|=6$ to $|c|=21$, with a median depth of 10.
 
-\begin{figure}[t]
+\begin{figure}[htbp]
   \centering
   \includegraphics[width=0.68\linewidth]{fig_depth.pdf}
   \caption{Distribution of cube lengths $|c|$ (number of assigned literals) across the 237 certified partition leaves. Depths range from $|c|=6$ (53 leaves of weight $2^{-6} = 1/64$) to $|c|=21$ (8 leaves of weight $2^{-21}$), with a median depth of 10. The pairwise disjoint cubes satisfy $\sum_{i=1}^{237} 2^{-|c_i|} = 1.0$, guaranteeing a complete partition of the search space.}
   \label{fig:depth}
 \end{figure}
-
-As illustrated in Figure \ref{fig:depth}, the lookahead partition decomposes the space into 237 mutually orthogonal cubes spanning depths from $|c|=6$ to $|c|=21$, whose rational weights satisfy $\sum_{i=1}^{237} 2^{-|c_i|} = 1.0$.
 
 \begin{figure}[t]
   \centering
@@ -363,7 +362,7 @@ The mathematical confidence in this certified result rests upon the integrity of
     \item \textbf{Proof Trace Verifier:} \texttt{drat-trim} \cite{wetzler2014} (compiled with GCC, SHA-256 \sha{f0416375a8c99c67c267994bc186c0dbe44692e580681725e959264d711de15f}), executed with timeout flag \texttt{-t 20000}.
     \item \textbf{Isolated Environment:} Docker image \texttt{vektor-sat-verifier} (Image ID \sha{sha256:80e44510f3a2435657deb7711be64d0e1e534901e43c80c9df87e6953f2945c5}).
     \item \textbf{Partition Splitter:} Deterministic internal Python lookahead splitter (\texttt{choose\_split\_vars} and \texttt{make\_children} in \path{core/cube_conquer_worker.py}) evaluating the propagation score $(|\text{prop}(x)|+1)(|\text{prop}(\neg x)|+1)$ via CaDiCaL's \texttt{solver.propagate(assumptions=...)}.
-    \item \textbf{Artifacts \& Computational Expenditure:} Complete proof traces comprise 5.97~GiB across all 237 leaves, requiring 7.80~hours of CaDiCaL solver runtime and 12.92~hours of \texttt{drat-trim} verification (total 20.72~hours). The complete reproduction bundle---comprising the base formula \path{ramsey.cnf}, the 237 certified partition cubes (\path{ramsey_cubes_237.icnf}), the lookahead splitting script (\path{core/cube_conquer_worker.py}), the JSON manifests (\path{manifest_ramsey_complete_237_leaves.json}, \path{manifest_ramsey_c214.json}, \path{manifest_ramsey_c202.json}), verification scripts (\path{scripts/test_all_137514_orbits_exhaustive.py}, \path{scripts/test_encoder_boundary_and_low_cliques.py}, \path{scripts/verify_symmetry_breaking_pairs.py}), figure generation scripts (\path{figures/generate_fig_structure.py}, \path{figures/generate_fig_depth.py}, \path{figures/generate_fig_cost.py}), and trace verification drivers---is maintained in the open public repository (\url{https://github.com/diaztapiarodrigo/ramsey-r55-z7-refutation}); an archival deposit on Zenodo will be established upon publication.
+    \item \textbf{Artifacts \& Computational Expenditure:} Complete proof traces comprise 5.97~GiB across all 237 leaves, requiring 7.80~hours of CaDiCaL solver runtime and 12.92~hours of \texttt{drat-trim} verification (total 20.72~hours). The complete reproduction bundle---comprising the base formula \path{ramsey.cnf}, the 237 certified partition cubes (\path{ramsey_cubes_237.icnf}), the lookahead splitting script (\path{core/cube_conquer_worker.py}), the JSON manifests (\path{manifest_ramsey_complete_237_leaves.json}, \path{manifest_ramsey_c214.json}, \path{manifest_ramsey_c202.json}), verification scripts (\path{scripts/test_all_137514_orbits_exhaustive.py}, \path{scripts/test_encoder_boundary_and_low_cliques.py}, \path{scripts/verify_symmetry_breaking_pairs.py}), figure generation scripts (\path{figures/generate_fig_structure.py}, \path{figures/generate_fig_depth.py}, \path{figures/generate_fig_cost.py}), and trace verification drivers---is maintained in the open public repository (\url{https://github.com/diaztapiarodrigo/ramsey-r55-z7-refutation}); an archival package will be deposited on Zenodo upon completion of the peer-review process.
     \item \textbf{Line Endings \& File Hashes:} The canonical file \texttt{ramsey.cnf} is distributed with UNIX LF line endings (size 10,347,775 bytes, SHA-256 \sha{0a9fc55ec9a2bcbab3a27fdc77619732113a5163ac555b7e506b3b5ad5c31485}). In Windows environments with CRLF endings, the size is 10,623,384 bytes (SHA-256 \sha{b055bde4271755e718fd7db964e3f4a11f59ce943af3506c7ac92e17ac3ccb8e}).
 \end{enumerate}
 
