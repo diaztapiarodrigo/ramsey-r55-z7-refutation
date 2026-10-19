@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+message: "If you use this work or data, please cite it as below."
+authors:
+  - family-names: "Díaz Tapia"
+    given-names: "Rodrigo"
+    affiliation: "Independent Researcher, Santiago, Chile"
+    email: "diaztapiarodrigo@gmail.com"
+title: "On the Non-Existence of (5,5,43)-Ramsey Graphs under Order-7 Automorphisms with a Unique Fixed Point: A Certified Cube-and-Conquer Refutation"
+version: "1.0.0"
+date-released: 2026-10-19
+url: "https://github.com/diaztapiarodrigo/ramsey-r55-z7-refutation"
+repository-code: "https://github.com/diaztapiarodrigo/ramsey-r55-z7-refutation"
+license: "MIT"
+keywords:
+  - "ramsey-theory"
+  - "ramsey-numbers"
+  - "r-5-5"
+  - "cube-and-conquer"
+  - "sat-solver"
+  - "cadical"
+  - "drat-trim"
+  - "formal-verification"
+  - "extremal-combinatorics"
+  - "graph-automorphisms"
+preferred-citation:
+  type: article
+  authors:
+    - family-names: "Díaz Tapia"
+      given-names: "Rodrigo"
+  title: "On the Non-Existence of (5,5,43)-Ramsey Graphs under Order-7 Automorphisms with a Unique Fixed Point: A Certified Cube-and-Conquer Refutation"
+  journal: "arXiv preprint"
+  year: 2026
+  month: 10
