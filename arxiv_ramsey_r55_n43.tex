@@ -1,0 +1,455 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{url}
+\usepackage{microtype}
+\usepackage{hyperref}
+\usepackage{xurl}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!70!black,
+    citecolor=blue!70!black,
+    urlcolor=blue!70!black,
+    pdfauthor={Rodrigo Emilio Díaz Tapia},
+    pdftitle={On the Non-Existence of (5,5,43)-Ramsey Graphs under Order-7 Automorphisms with a Unique Fixed Point}
+}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{hypothesis}{Hypothesis}
+\newtheorem{computation}{Certified Computational Result}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+
+\newcommand{\sha}[1]{{\footnotesize\path{#1}}}
+
+\title{\textbf{On the Non-Existence of $(5,5,43)$-Ramsey Graphs under Order-7 Automorphisms with a Unique Fixed Point: A Certified Cube-and-Conquer Refutation}}
+
+\author{
+    \textbf{Rodrigo Emilio Díaz Tapia}\\
+    \textit{Independent Researcher, Santiago, Chile}\\
+    \texttt{diaztapiarodrigo@gmail.com} \quad \href{https://orcid.org/0009-0007-8910-797X}{\texttt{ORCID: 0009-0007-8910-797X}}
+}
+
+\date{October 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Using Cube-and-Conquer with DRAT proof traces verified by \texttt{drat-trim}, we show that the boolean formula encoding $(5,5)$-Ramsey graphs on 43 vertices admitting an automorphism of order 7 with exactly one fixed point is unsatisfiable (237 disjoint cubes of total weight 1, each certified on the identical base formula). We prove that the fixed vertex must have degree 21 (split into 3 red and 3 blue orbits) as an analytical deduction from $R(4,5)=25$, and provide an analytical proof sketch for the soundness of the lexicographic symmetry breaking constraints, which we submit for independent peer review (and which has been tested empirically on smaller orders). Consequently, the computational result establishes the non-existence of $(5,5,43)$-graphs in this symmetric family, conditional upon the correctness of the boolean encoder of forbidden subgraphs and symmetry breaking constraints; it further relies on CaDiCaL, \texttt{drat-trim}, and our partition and merging scripts.
+
+\vspace{0.5em}
+\noindent\textbf{One-sentence summary:} No $(5,5)$-Ramsey graph on 43 vertices exists that admits an automorphism of order 7 and a unique fixed point, according to a certified DRAT proof over 237 cubes, subject to an analytical symmetry breaking proof sketch submitted for peer review and conditional upon the correctness of the boolean encoder.
+\end{abstract}
+
+\noindent\textbf{Keywords:} Ramsey Theory, $R(5,5)$, Cube-and-Conquer, Satisfiability (SAT), DRAT Verification, Graph Automorphisms.
+
+\vspace{1em}
+
+\section{Introduction \& Context in Extremal Ramsey Theory}
+
+The classical diagonal Ramsey number $R(5,5)$ is the smallest integer $n$ such that every 2-coloring of the edges of the complete graph $K_n$ contains a monochromatic complete subgraph on 5 vertices ($K_5$, red or blue). The value of $R(5,5)$ remains one of the most celebrated open problems in combinatorial graph theory, tightly bracketed between 43 and 46:
+\[
+43 \le R(5,5) \le 46.
+\]
+The lower bound $R(5,5) \ge 43$ was established in 1989 by Exoo \cite{exoo1989} by exhibiting an explicit $(5,5,42)$-graph (a graph on 42 vertices containing neither $K_5$ nor an independent set $I_5$). Exoo's construction was obtained by analyzing circulant colorings of $K_{43}$ that contained monochromatic $K_5$'s, deleting one vertex, and modifying a subset of edges to eliminate all monochromatic $K_5$'s and $I_5$'s.
+
+On the upper bound front, McKay and Radziszowski \cite{mckay1995} proved $R(4,5) = 25$ using exhaustive computer-assisted generation. In 1997, McKay and Radziszowski \cite{mckay1997} proved $R(5,5) \le 49$ and constructed 656 non-isomorphic $(5,5,42)$-graphs, showing that none of these 656 known graphs can be extended by a single vertex to form a $(5,5,43)$-graph. As documented in McKay's combinatorial data repository \cite{mckay_ramsey_data}, the distribution file \texttt{r55\_42some.g6} stores 328 of these graphs, while the remaining 328 are their graph complements. Crucially, as documented by Radziszowski \cite{radziszowski2021}, the set of all $(5,5,42)$-graphs has never been exhaustively cataloged. Consequently, the non-extensibility of the 656 known graphs did not rule out the existence of a $(5,5,43)$-graph originating from an uncataloged order-42 subgraph. Recent computational breakthroughs by Angeltveit and McKay tightened the upper bound to $R(5,5) \le 48$ \cite{angeltveit2018} and subsequently to $R(5,5) \le 46$ \cite{angeltveit2024}. It is widely conjectured that $R(5,5) = 43$.
+
+\paragraph{Symmetric and Prescribed Automorphism Searches.}
+Prescribed automorphism groups have long been exploited in Ramsey theory to search for extremal graphs or prune search spaces (e.g., Exoo and Tatarevic \cite{exoo2015}). In the case of $n=43$, circulant graphs ($\mathbb{Z}_{43}$-invariant colorings) provide a natural baseline: edge colors depend solely on the 21 chord distances in $\mathbb{Z}_{43}$. Under $\mathbb{Z}_{43}$, the $\binom{43}{5} = 962,598$ 5-vertex subsets partition into exactly $\binom{43}{5} / 43 = 22,386$ canonical orbits, yielding a compact propositional formula with 21 variables and $22,386 \times 2 = 44,772$ clauses. As an uncertified sanity baseline, we solved this formula directly in CaDiCaL in 3.00 seconds (2,223 conflicts, 0 assumptions), confirming without proof logging the well-known non-existence of circulant $(5,5,43)$-graphs.
+
+In this work, we investigate hypothetical $(5,5,43)$-graphs possessing a cyclic automorphism $\sigma$ of prime order 7. Any such automorphism decomposes the 43 vertices into $f$ fixed points and $B$ orbits of length 7 ($43 = f + 7B$). We establish a complete certified refutation for the case of a unique fixed point ($f=1, B=6$). We emphasize that we have not conducted a systematic survey of unindexed computational literature, private technical notes, or unpublished graph repositories (such as collections maintained by McKay or Exoo); consequently, we do not know whether this specific case ($f=1, B=6$ under an order-7 automorphism) has been previously examined or ruled out by other researchers.
+
+\paragraph{The Cube-and-Conquer Methodology.}
+To solve the propositional formulation of the $f=1, B=6$ search space, we utilize the Cube-and-Conquer (C\&C) paradigm developed by Heule, Kullmann, and Marek \cite{heule2016}. Cube-and-Conquer partitions a challenging propositional satisfiability formula $F$ into two complementary stages:
+\begin{enumerate}
+    \item \textbf{Cube phase (Lookahead Partitioning):} A lookahead procedure evaluates candidate variables using a propagation-based activity heuristic (in our implementation, maximizing $(|\text{prop}(x)|+1)(|\text{prop}(\neg x)|+1)$) to build an orthogonal decision tree of literal assignments, termed \emph{cubes}. Each leaf cube $C_i = l_{i,1} \land \dots \land l_{i,k}$ specifies a localized subproblem $F \land C_i$. Because the branches form a complete partition, the cubes are pairwise mutually orthogonal and their fractional weights satisfy $\sum_{i=1}^{N} 2^{-|C_i|} = 1.0$, guaranteeing that the disjunction $\bigvee_{i=1}^{N} C_i$ is a propositional tautology, with global partition coverage further certified independently via DRAT.
+    \item \textbf{Conquer phase (CDCL Solving and Certification):} A conflict-driven clause learning (CDCL) solver (here, CaDiCaL \cite{biere2024}) is dispatched on each simplified subformula $F \land C_i$ independently. For each refutation, the solver emits a deductive proof trace in the DRAT format. The proof traces are independently checked by \texttt{drat-trim}, certifying that no satisfying assignment exists within the subspace defined by $C_i$.
+\end{enumerate}
+This methodology enables embarrassingly parallel solver execution while yielding a formal certificate of unsatisfiability across the entire state space.
+
+\section{Primary Result: Certified Refutation for \texorpdfstring{$f=1, B=6$}{f=1, B=6}}
+
+Let $V(G) = \{0\} \cup \bigcup_{b=0}^{5} B_b$, where vertex 0 is fixed by $\sigma$ and each $B_b = \{1 + 7b + o \mid o \in \mathbb{Z}_7\}$ is an orbit of length 7 under $\sigma(v) = 1 + 7b + ((o + 1) \bmod 7)$.
+
+\begin{computation}[Certified Computational Result]
+The boolean formula \texttt{ramsey.cnf} ($309$ variables, $275,608$ clauses, SHA-256 \sha{0a9fc55ec9a2bcbab3a27fdc77619732113a5163ac555b7e506b3b5ad5c31485} with LF endings, or \sha{b055bde4271755e718fd7db964e3f4a11f59ce943af3506c7ac92e17ac3ccb8e} with CRLF endings) is unsatisfiable. The refutation consists of a partition into 237 mutually orthogonal cubes whose rational weights sum exactly to $\frac{1}{1} = 1.0$, where each leaf is formally verified by \texttt{drat-trim} with exit code 0 (\texttt{s VERIFIED}) from deductive proof traces emitted by CaDiCaL 1.9.5.
+\end{computation}
+
+\subsection{Conditioning Hypothesis: Correctness of the Propositional Encoder}
+
+Because the degree reduction and symmetry breaking schemes are mathematically sound in the abstract (Section \ref{sec:theory}), the certified computational result is conditioned strictly upon the correctness of the generated propositional formula:
+
+\begin{hypothesis}[Correctness of the Propositional Encoder of Forbidden Subgraphs and Symmetry Breaking]
+The propositional clauses in \texttt{ramsey.cnf} soundly and completely encode:
+\begin{enumerate}
+    \item The forbidden monochromatic subgraph constraints (no red $K_5$ and no blue $K_5$ under $\mathbb{Z}_7$ invariance).
+    \item The symmetry breaking constraints established theoretically in Lemmas \ref{lem:block_convention}--\ref{lem:phase_shifts}.
+\end{enumerate}
+The symmetry breaking scheme is proven sound in the abstract (Section \ref{sec:theory}); the computational result is conditional upon the premise that the generated propositional clauses faithfully implement these mathematical constraints (matching bit-order, comparator direction, and prohibited patterns).
+
+This hypothesis has been cross-validated through four complementary levels of verification:
+\begin{itemize}
+    \item \textbf{Exhaustive 100\% Orbit-by-Orbit Clause Verification (137,514 Orbits / 275,028 Clauses):} Using an independent mathematical script (\path{scripts/test_all_137514_orbits_exhaustive.py}), we generated all $\binom{43}{5} = 962,598$ 5-vertex subsets from first principles, partitioned them into the 137,514 canonical orbits under $\mathbb{Z}_7$, and computed the exact set of base edge variables associated with each orbit. We verified a strict 1-to-1 bijection against all 137,514 red clauses and all 137,514 blue clauses generated in \texttt{ramsey.cnf}, confirming \textbf{0 mismatches, 0 omitted edges, and 0 extraneous variables} across the entire formula. The exact clause-length spectrum across the 137,514 orbits is:
+    \begin{itemize}
+        \item Length 3: 18 orbits (36 clauses in CNF)
+        \item Length 4: 30 orbits (60 clauses in CNF)
+        \item Length 7: 2,625 orbits (5,250 clauses in CNF)
+        \item Length 8: 1,680 orbits (3,360 clauses in CNF)
+        \item Length 9: 28,350 orbits (56,700 clauses in CNF)
+        \item Length 10: 104,811 orbits (209,622 clauses in CNF)
+    \end{itemize}
+    Total: exactly 137,514 orbits and $2 \times 137,514 = 275,028$ clique clauses. Graph-level round-trip tests confirmed that setting the edge variables of an orbit to monochromatic red or blue instantiates a monochromatic clique in the adjacency matrix and falsifies the corresponding clause.
+    \item \textbf{Direct randomized and boundary cross-validation on $n=43$:} Using an independent verification script (\path{scripts/test_encoder_boundary_and_low_cliques.py}, seed 42), we evaluated 140 independent random $\mathbb{Z}_7$-invariant colorings of $K_{43}$ across edge probabilities $p \in \{0.10,$ $0.20,$ $0.35,$ $0.50,$ $0.65,$ $0.80,$ $0.90\}$ (20 per density). This sweep tested both sides of the percolation transition: 44 colorings were completely free of red $K_5$ ($p \le 0.35$), 47 were completely free of blue $I_5$ ($p \ge 0.65$), and 49 contained both. To verify sensitivity near the satisfiability boundary, we additionally tested 23 fine-boundary colorings with small clique counts (down to exactly 1 red $K_5$ at $p=0.28$ and exactly 1 blue $I_5$ at $p=0.66, 0.68, 0.72$). In all instances, the exact count of monochromatic 5-cliques in the full $43 \times 43$ graph matched with 100.00\% precision the number of violated clauses in \texttt{ramsey.cnf} (0 false positives, 0 false negatives).
+    \item \textbf{Small-scale All-SAT isomorphism contrast ($n \le 22$, up to 2 free blocks):} On the analogous setting $n=22$ with $B=3$ blocks (1 anchor block and 2 free blocks), exhaustive All-SAT enumeration verified that the symmetry breaking clauses preserve 100\% of graph isomorphism classes, reducing the model space by the exact theoretical group orbit factor $|(\mathbb{Z}_7 \times \mathbb{Z}_7) \rtimes \mathbb{Z}_3| = 147$. This validates the encoder's bit-ordering, multiplier logic, and phase comparator mechanics for up to 2 free blocks; the extension to all 5 free blocks on $n=43$ relies on the analytical commutativity of the independent phase shifts proved in Lemma \ref{lem:phase_shifts}.
+    \item \textbf{Classical Ramsey threshold controls (small orders):} Four certified negative controls ($(3,3)$ on $n=8$, $(3,4)$ on $n=15$, $(4,4)$ on $n=22$, and $(4,5)$ on $n=29$) produced \texttt{UNSAT} with verified DRAT traces, while three positive controls ($(5,5)$ on $n=22$, $(5,5)$ on $n=29$, and $(5,6)$ on $n=43$) produced \texttt{SAT} solutions decoded and confirmed as monochromatic-subgraph-free.
+\end{itemize}
+The encoder implementation has not been machine-checked inside an interactive proof assistant (such as Lean 4 or Coq).
+\end{hypothesis}
+
+\section{Theoretical Analysis: Sound Symmetry Reduction}
+\label{sec:theory}
+
+In this section, we show that the constraints added to \texttt{ramsey.cnf} (degree fixing on vertex 0 and lexicographic symmetry breaking) are sound without loss of generality.
+
+\subsection{Degree Rigidity of Fixed Points}
+
+Let $G = (V, E)$ be any $(5,5,43)$-graph. For every vertex $v \in V$, let $N_{\text{red}}(v)$ and $N_{\text{blue}}(v)$ denote its red and blue neighborhoods.
+\begin{enumerate}
+    \item The induced subgraph $G[N_{\text{red}}(v)]$ cannot contain a red $K_4$ nor a blue $I_5$, so it is a $(4,5)$-graph. By McKay and Radziszowski \cite{mckay1995}, $R(4,5) = 25$, whence $\text{deg}_{\text{red}}(v) = |N_{\text{red}}(v)| \le 24$.
+    \item Symmetrically, $G[N_{\text{blue}}(v)]$ is a $(5,4)$-graph, yielding $\text{deg}_{\text{blue}}(v) \le 24$.
+    \item Since $|V| = 1 + \text{deg}_{\text{red}}(v) + \text{deg}_{\text{blue}}(v) = 43$, we have:
+    \[
+    18 \le \text{deg}_{\text{red}}(v) \le 24 \quad \text{and} \quad 18 \le \text{deg}_{\text{blue}}(v) \le 24 \quad \forall v \in V(G).
+    \]
+\end{enumerate}
+
+Now let $\sigma \in \text{Aut}(G)$ have order 7, fixing a set $F = \text{Fix}(\sigma)$ of size $f$, with $B$ orbits of length 7 ($f + 7B = 43$).
+
+\begin{proposition}[Monochromaticity of Fixed-Orbit Edges]
+For every fixed point $v \in F$ and every 7-cycle orbit $B_b$, all 7 edges between $v$ and $B_b$ are monochromatic (either all red or all blue).
+\end{proposition}
+\begin{proof}
+Let $u \in B_b$. If $(v, u)$ is red, then since $\sigma(v) = v$ and $\sigma$ preserves edge colors, $(v, \sigma^k(u))$ is red for all $k \in \{0, \dots, 6\}$. Since $B_b = \{\sigma^k(u) \mid k \in \mathbb{Z}_7\}$, all 7 edges between $v$ and $B_b$ are red.
+\end{proof}
+
+Let $k_{\text{red}}(v)$ denote the number of orbits connected to $v$ by red edges ($0 \le k_{\text{red}}(v) \le B$), and let $d_F(v)$ denote the red degree of $v$ within $G[F]$ ($0 \le d_F(v) \le f - 1$). The total red degree of $v$ is $\text{deg}_{\text{red}}(v) = d_F(v) + 7 \cdot k_{\text{red}}(v)$, yielding the Diophantine inequality:
+\begin{equation}
+18 \le d_F(v) + 7 \cdot k_{\text{red}}(v) \le 24.
+\label{eq:diophantine}
+\end{equation}
+\begin{theorem}[Unconditional Degree Rigidity for $f=1$]
+\label{thm:degree_rigidity}
+When $f=1$, the unique fixed point $0$ satisfies $d_F(0) = 0$. The unique integer solution to (\ref{eq:diophantine}) is $k_{\text{red}}(0) = 3$. Hence, $\text{deg}_{\text{red}}(0) = 21$ and $\text{deg}_{\text{blue}}(0) = 21$ unconditionally.
+\end{theorem}
+\begin{proof}
+Since $f=1$, $d_F(0) = 0$, so $18 \le 7 \cdot k_{\text{red}}(0) \le 24$. For $k \le 2$, $7k \le 14 < 18$. For $k \ge 4$, $7k \ge 28 > 24$. The unique integer solution is $k_{\text{red}}(0) = 3$, giving $\text{deg}_{\text{red}}(0) = 21$.
+\end{proof}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.55\linewidth]{fig_structure.pdf}
+  \caption{Structure of a $(5,5,43)$-graph admitting an order-7 cyclic automorphism $\sigma$ with a unique fixed point (vertex 0). By Theorem \ref{thm:degree_rigidity}, vertex 0 must be connected in red to exactly three 7-vertex orbits ($B_0, B_1, B_2$, yielding $\text{deg}_{\text{red}}(0)=21$) and in blue to the remaining three orbits ($B_3, B_4, B_5$, yielding $\text{deg}_{\text{blue}}(0)=21$). The perimeter of each heptagonal orbit represents edges at cyclic chord distance $d=1$ under $\sigma: o \mapsto (o+1) \bmod 7$; internal chords ($d \in \{2, 3\}$) and cross-orbit edges are omitted for visual clarity.}
+  \label{fig:structure}
+\end{figure}
+
+\subsection{Soundness of Block Assignment and Symmetry Breaking}
+
+\begin{lemma}[Orbit Labeling Convention]
+\label{lem:block_convention}
+If there exists a $(5,5,43)$-graph $G$ invariant under $\sigma$ with $f=1$, there exists an isomorphic graph $G'$ whose red blocks from vertex 0 are $B_0, B_1, B_2$ and blue blocks are $B_3, B_4, B_5$.
+\end{lemma}
+\begin{proof}
+By Theorem 1, vertex 0 is red to exactly 3 orbits and blue to exactly 3 orbits. Any permutation of the 6 orbits preserves the group action $\sigma$ (which acts independently on each orbit). There are $\binom{6}{3} = 20$ choices of the 3 red orbits. Relabeling the orbits so that the 3 red orbits are indexed $0, 1, 2$, and choosing cyclic coordinates in each orbit such that $\sigma$ acts as the canonical unit shift $o \mapsto (o+1) \bmod 7$, produces an isomorphic graph satisfying the 6 degree unit clauses.
+\end{proof}
+
+\begin{lemma}[Intra-Block Multiplier Normalization on $B_0$]
+\label{lem:multiplier}
+If there exists a $(5,5,43)$-graph satisfying the orbit labeling convention of Lemma \ref{lem:block_convention}, there exists an isomorphic graph in the same convention whose intra-block distance pattern on $B_0$ is lexicographically minimal under the multiplier action of $\mathbb{Z}_7^* / \{\pm 1\} \cong \mathbb{Z}_3$.
+\end{lemma}
+\begin{proof}
+For any multiplier $m \in \{1, 2, 4\} \cong \mathbb{Z}_7^* / \{\pm 1\}$, consider the map $\phi_m: V(G) \to V(G)$ defined by $\phi_m(0) = 0$ and $\phi_m(1 + 7b + o) = 1 + 7b + (m \cdot o \bmod 7)$ for all $b \in \{0, \dots, 5\}$ and $o \in \mathbb{Z}_7$.
+The map $\phi_m$ is a vertex permutation mapping $G$ to an isomorphic graph $\phi_m(G)$, transforming intra-block chord distances and inter-block edge patterns across all blocks simultaneously. 
+Under this map, the cyclic automorphism $\sigma$ is conjugated to $\phi_m \circ \sigma \circ \phi_m^{-1} = \sigma^m$. Because $\gcd(m, 7) = 1$, $\sigma^m$ generates the exact same cyclic group $\langle \sigma \rangle \le \text{Aut}(G)$. To retain the canonical presentation where the cyclic generator is the unit shift $o' \mapsto (o' + 1) \bmod 7$, we reindex the vertices via $o' = m \cdot o \bmod 7$. Since $\phi_m$ maps each orbit $B_b$ onto itself and fixes vertex 0, this reindexing leaves the orbit partition and vertex 0 invariant.
+
+The strict sequential order of operations is essential: $\phi_m$ is applied \emph{before} the phase alignments of Lemma \ref{lem:phase_shifts}. While the simultaneous reindexing of all blocks $o' = m \cdot o \bmod 7$ alters the coordinate presentation of inter-block edge vectors, no phase alignments on free blocks have been fixed yet. Establishing the canonical generator $\sigma$ and fixing the minimal chord representative on $B_0$ first guarantees that the subsequent phase shifts $\psi_{c_b}$ will operate with respect to the canonical shift and will never be scrambled by subsequent multiplier transformations.
+
+Furthermore:
+\begin{enumerate}
+    \item Because every edge between vertex 0 and any orbit $B_b$ is monochromatic (Proposition 1), $\phi_m$ preserves the colors of all edges incident to vertex 0. Thus, the orbit labeling convention of Lemma \ref{lem:block_convention} (red blocks $\{0,1,2\}$ and blue blocks $\{3,4,5\}$) is preserved.
+    \item On block $B_0$, an intra-block edge at chord distance $d \in \{1, 2, 3\}$ has endpoints with difference $\pm d$. Under the generator $m = 2$, this difference maps to $\pm 2d \bmod 7$:
+    \begin{itemize}
+        \item $d = 1 \implies \pm 2 \implies \text{chord distance } 2$.
+        \item $d = 2 \implies \pm 4 \equiv \mp 3 \implies \text{chord distance } 3$.
+        \item $d = 3 \implies \pm 6 \equiv \mp 1 \implies \text{chord distance } 1$.
+    \end{itemize}
+    Hence, $m = 2$ acts on distance indices as the 3-cycle $(1 \to 2 \to 3 \to 1)$. Representing the distance coloring of $B_0$ as a bitvector $(x_1, x_2, x_3) \in \{0, 1\}^3$ (where $x_d = 1$ if distance $d$ is red), the multiplier acts by cyclic coordinate permutation: $\phi_2(x_1, x_2, x_3) = (x_3, x_1, x_2)$.
+    \item Under this $\mathbb{Z}_3$ action, the 8 bitvectors partition into 4 orbits:
+    \begin{itemize}
+        \item Two fixed points: $\{(0,0,0)\}$ and $\{(1,1,1)\}$.
+        \item Orbit of weight 1: $\{(0,0,1), (0,1,0), (1,0,0)\}$, whose unique lexicographically minimal element is $(0,0,1)$.
+        \item Orbit of weight 2: $\{(0,1,1), (1,0,1), (1,1,0)\}$, whose unique lexicographically minimal element is $(0,1,1)$.
+    \end{itemize}
+\end{enumerate}
+Choosing $m \in \{1, 2, 4\}$ that achieves the minimal representative restricts $B_0$ to one of the 4 minimal patterns $(0,0,0), (0,0,1), (0,1,1), (1,1,1)$, soundly eliminating the 4 non-minimal patterns $(0,1,0), (1,0,0), (1,0,1), (1,1,0)$ via the 4 clauses of length 3.
+\end{proof}
+
+\begin{lemma}[Independent Phase Alignment on Free Blocks $B_1, \dots, B_5$]
+\label{lem:phase_shifts}
+If there exists a $(5,5,43)$-graph satisfying Lemmas \ref{lem:block_convention} and \ref{lem:multiplier}, there exists an isomorphic graph that simultaneously satisfies all 570 lexicographic symmetry breaking clauses \texttt{lex\_leq} on blocks $B_1, \dots, B_5$.
+\end{lemma}
+\begin{proof}
+Subsequent to the application of Lemma \ref{lem:multiplier}, for each free block $b \in \{1, \dots, 5\}$, consider an independent cyclic phase shift $\psi_{c_b}: V(G) \to V(G)$ defined by:
+\[
+\psi_{c_b}(v) = \begin{cases}
+1 + 7b + (o + c_b \bmod 7) & \text{if } v = 1 + 7b + o \in B_b, \\
+v & \text{if } v \notin B_b \text{ (including } v = 0 \text{ and } v \in B_0).
+\end{cases}
+\]
+Each map $\psi_{c_b}$ is an isomorphism from $G$ to an isomorphic graph $\psi_{c_b}(G)$:
+\begin{enumerate}
+    \item \textbf{Incidence to vertex 0:} Since all edges between 0 and $B_b$ are monochromatic, shifting the internal phase of $B_b$ by $c_b$ does not alter the color of any edge incident to 0.
+    \item \textbf{Intra-block edges in $B_b$:} The distance between $o_1$ and $o_2$ is $(o_1 - o_2) \bmod 7 = ((o_1 + c_b) - (o_2 + c_b)) \bmod 7$, so all intra-block distances within $B_b$ (and within all other blocks) remain strictly unchanged.
+    \item \textbf{Invariance of $B_0$:} Because $\psi_{c_b}$ acts as the identity on $B_0$ ($c_0 = 0$), the normalized intra-block chord pattern of $B_0$ established in Lemma \ref{lem:multiplier} is completely untouched.
+    \item \textbf{Inter-block vectors between $B_0$ and $B_b$:} The 7-bit vector $vec(0, b, \cdot) = (e(0, 0, b, \delta))_{\delta=0}^{6}$ connects vertex $0 \in B_0$ to $B_b$. Shifting $B_b$ by $c_b$ shifts this vector cyclically: $vec'(0, b, \delta) = vec(0, b, \delta - c_b \bmod 7)$. Among the 7 cyclic rotations $\{\text{rot}_k(vec(0, b, \cdot)) \mid k \in \mathbb{Z}_7\}$, there is at least one that is lexicographically minimal. By choosing $c_b$ such that $vec'(0, b, \cdot)$ achieves this minimum, the vector satisfies $vec'(0, b, \cdot) \le_{\text{lex}} \text{rot}_k(vec'(0, b, \cdot))$ for all $k \in \{1, \dots, 6\}$, exactly satisfying the \texttt{lex\_leq} comparator conditions.
+    \item \textbf{Cross-block edges between $B_b$ and $B_{b'}$ ($b \ne b' \ge 1$):} Shifting $B_b$ and $B_{b'}$ transforms the inter-block vector $vec(b, b', \cdot)$ by the relative phase difference $(c_b - c_{b'}) \bmod 7$. The symmetry reduction conditions imposed on $G'$ constrain only the anchor vectors $vec(0, b, \cdot)$ for $b \in \{1,\dots,5\}$; they impose no restrictions on cross-block edges between pairs of free blocks. Therefore, transforming cross-block edges preserves all conditions established thus far.
+\end{enumerate}
+Because each phase shift $\psi_{c_b}$ acts exclusively on block $B_b$, the 5 shifts $\psi_{c_1}, \dots, \psi_{c_5}$ commute and act independently on the vectors $vec(0, 1, \cdot), \dots, vec(0, 5, \cdot)$. Choosing each $c_b \in \mathbb{Z}_7$ independently to select the minimal cyclic rotation establishes the existence of an isomorphic graph satisfying all 570 lexicographic clauses simultaneously.
+\end{proof}
+
+\begin{theorem}[Mathematical Soundness of the Symmetry Reduction]
+\label{thm:soundness}
+If there exists a $(5,5,43)$-graph $G$ admitting an automorphism of order 7 with a unique fixed point, then there exists an isomorphic graph $G'$ that satisfies:
+\begin{enumerate}
+    \item The degree conditions $\text{deg}_{\text{red}}(0) = 21$ and $\text{deg}_{\text{blue}}(0) = 21$, with red blocks $\{0,1,2\}$ and blue blocks $\{3,4,5\}$ from vertex 0 (Theorem 1 and Lemma \ref{lem:block_convention}).
+    \item The intra-block chord minimality condition on $B_0$ under $\mathbb{Z}_7^* / \{\pm 1\} \cong \mathbb{Z}_3$ (Lemma \ref{lem:multiplier}).
+    \item The lexicographic minimality conditions $vec(0, b, \cdot) \le_{\text{lex}} \text{rot}_k(vec(0, b, \cdot))$ for all $k \in \{1,\dots,6\}$ and $b \in \{1,\dots,5\}$ (Lemma \ref{lem:phase_shifts}).
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+Immediate from the sequence of isomorphisms constructed in Lemma \ref{lem:block_convention}, Lemma \ref{lem:multiplier}, and Lemma \ref{lem:phase_shifts}.
+\end{proof}
+
+\begin{remark}[Implementation Fidelity of Symmetry Breaking]
+Theorem \ref{thm:soundness} establishes the mathematical soundness of the symmetry reduction scheme in the abstract. The property that the propositional clauses generated in \texttt{ramsey.cnf} faithfully implement these mathematical conditions (matching bit order, comparator orientation, and the list of prohibited patterns) is an implementation property. While not verified in an interactive theorem prover, this correspondence was validated empirically by exhaustive All-SAT enumeration on smaller orders ($n \le 22$ with $B \le 3$, covering instances with 0, 1, and 2 free blocks), where the generated clauses reduced the model count by the exact theoretical group orbit factors (3:1, 21:1, and 147:1) without eliminating any graph isomorphism classes.
+Moreover, an explicit structural census of all 574 symmetry breaking clauses in \texttt{ramsey.cnf} confirms that the implementation strictly mirrors this property: exactly 4 clauses of length 3 enforce the intra-block multiplier normalization on $B_0$ (Lemma \ref{lem:multiplier}), and exactly 114 clauses ($6 \text{ rotations} \times 19 \text{ comparator clauses}$) are generated for each anchor pair $(B_0, B_b)$ with $b \in \{1, \dots, 5\}$, totaling $5 \times 114 = 570$ clauses ($4 + 570 = 574$ clauses), while exactly \textbf{0 clauses} are generated for all $\binom{5}{2} = 10$ pairs of free blocks $(B_b, B_{b'})$ ($1 \le b < b' \le 5$).
+\end{remark}
+
+\begin{proposition}[Conditioned Computational Conclusion]
+Assume Hypothesis 1 holds (the propositional clauses in \texttt{ramsey.cnf} correctly encode the forbidden subgraph constraints and the symmetry reduction conditions of Theorem \ref{thm:soundness}). Then, the verified unsatisfiability of \texttt{ramsey.cnf} establishes that no $(5,5,43)$-graph exists admitting an automorphism of order 7 and a unique fixed point.
+\end{proposition}
+
+\subsection{Combinatorial Spectrum of Fixed Points under \texorpdfstring{$\mathbb{Z}_7$}{Z7}}
+
+Table \ref{tab:fixed_points} summarizes the complete spectrum of non-trivial order-7 automorphism actions on 43 vertices ($n = f + 7B$).
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{cccccccp{5.5cm}}
+\toprule
+$B$ & $f$ & $V_{FF}$ & $V_{\text{intra}}$ & $V_{FB}$ & $V_{\text{inter}}$ & \textbf{Base Vars} & \textbf{Admissible Solutions to Eq.~(\ref{eq:diophantine})} \\
+\midrule
+6 & 1  & 0   & 18 & 6  & 105 & \textbf{129} & $k_{\text{red}}=3$, $d_F=0$ (\textbf{Unique; $\text{deg}=21$; Refuted with DRAT}) \\
+5 & 8  & 28  & 15 & 40 & 70  & \textbf{153} & $k_{\text{red}} \in \{2, 3\}$ ($d_F \in [4,7]$ or $[0,3]$) \\
+4 & 15 & 105 & 12 & 60 & 42  & \textbf{219} & $k_{\text{red}} \in \{1, 2, 3\}$ ($k_{\text{red}}=0, 4$ impossible) \\
+3 & 22 & 231 & 9  & 66 & 21  & \textbf{327} & $k_{\text{red}} \in \{0, 1, 2, 3\}$ \\
+2 & 29 & 406 & 6  & 58 & 7   & \textbf{477} & $k_{\text{red}} \in \{0, 1, 2\}$ \\
+1 & 36 & 630 & 3  & 36 & 0   & \textbf{669} & $k_{\text{red}} \in \{0, 1\}$ \\
+\bottomrule
+\end{tabular}
+\caption{Classification of non-trivial $\mathbb{Z}_7$ automorphism actions on 43 vertices ($1 \le B \le 6$). $V_{FF} = \binom{f}{2}$ (edges within $F$), $V_{\text{intra}} = 3B$, $V_{FB} = fB$, $V_{\text{inter}} = 7\binom{B}{2}$.}
+\label{tab:fixed_points}
+\end{table}
+
+\section{Formula Structure, Small-Scale Controls, and Partition}
+
+\subsection{Boolean Encoding and Clause Families}
+
+The certified formula \texttt{ramsey.cnf} comprises 309 variables (129 base edge variables and 180 comparator auxiliary variables) and 275,608 clauses:
+\begin{enumerate}
+    \item \textbf{Degree Unit Clauses (6 clauses):} Enforces $v(0, B_0) = v(0, B_1) = v(0, B_2) = \text{True}$ and $v(0, B_3) = v(0, B_4) = v(0, B_5) = \text{False}$, encoding the unique degree $\text{deg}(0) = 21$.
+    \item \textbf{Intra-Block Multiplier Clauses (4 clauses of length 3):} Eliminates the 4 non-minimal distance patterns under $\mathbb{Z}_7^* / \{\pm 1\} \cong \mathbb{Z}_3$ on $B_0$.
+    \item \textbf{Inter-Block Lexicographic Ordering (\texttt{lex\_leq}, 570 clauses):} For each free block $b \in \{1, \dots, 5\}$, ensures $vec(0, b, \cdot) \le_{\text{lex}} \text{rot}_k(vec(0, b, \cdot))$ for $k \in \{1, \dots, 6\}$ ($5 \times 6 \times 19 = 570$ clauses, using $5 \times 6 \times 6 = 180$ auxiliary variables).
+    \item \textbf{Forbidden Monochromatic Subgraphs (275,028 clauses):} Since no subset of 5 vertices is invariant under an order-7 automorphism with a unique fixed point, every 5-subset belongs to an orbit of size exactly 7. There are exactly $\binom{43}{5} / 7 = 962,598 / 7 = \mathbf{137,514}$ canonical orbits. For each orbit, one clause forbids a red $K_5$ and one forbids a blue $K_5$ ($137,514 \times 2 = \mathbf{275,028}$ clauses): 36 clauses of size 3, 60 of size 4, 5,250 of size 7, 3,360 of size 8, 56,700 of size 9, and 209,622 of size 10 ($36 + 60 + 5250 + 3360 + 56700 + 209622 = 275,028$).
+\end{enumerate}
+Total clauses: $6 + 4 + 570 + 275,028 = 275,608$.
+
+\subsection{Small-Scale Sanity Control in \texorpdfstring{$n=22$}{n=22}: Testing Encoding Logic and Symmetry Breaking}
+
+To verify the encoding machinery and test the symmetry breaking implementation in an exhaustively checkable setting, we analyzed the small-scale parameter configuration $n=22$ with $B=3$ blocks ($1 + 3 \times 7 = 22$) under Ramsey parameters $(4,5)$. We emphasize that this small-scale test serves strictly as a sanity control on the encoding logic, bit-ordering, and symmetry-breaking implementation; it does not constitute mathematical evidence regarding $n=43$.
+
+\paragraph{Theoretical Bound vs.\ Empirical Distribution.} By the classical theorems of Greenwood and Gleason (1955) \cite{greenwood1955}, $R(3,5) = 14$ and $R(4,4) = 18$ (see also Radziszowski \cite{radziszowski2021}, and Kalbfleisch \cite{kalbfleisch1966} for the uniqueness of the critical $(4,4,17)$-graph). For any $(4,5)$-graph on 22 vertices, the red neighborhood of vertex 0 cannot contain a $(3,5)$-subgraph, forcing $\text{deg}_{\text{red}}(0) \le 13$. The blue neighborhood cannot contain a $(4,4)$-subgraph, forcing $\text{deg}_{\text{blue}}(0) \le 17 \implies \text{deg}_{\text{red}}(0) \ge 21 - 17 = 4$. Under an order-7 automorphism, $\text{deg}_{\text{red}}(0)$ must be a multiple of 7 in $[4, 13]$; hence, \textbf{the only theoretically admissible degree is 7} (exactly 1 red block).
+
+We performed an exhaustive All-SAT solver enumeration on $n=22$ without symmetry breaking:
+\begin{itemize}
+    \item Exactly 15,876 models were found up to complete exhaustion (\texttt{solve() == False}).
+    \item Exactly 15,876 out of 15,876 models (100.00\%) exhibit $\text{deg}_{\text{red}}(0) = 7$.
+    \item Exactly 0 models exhibit degrees 0, 14, or 21.
+    \item Across all 9 graph isomorphism classes, 100\% of models (1,764 in each class) have $\text{deg}_{\text{red}}(0) = 7$.
+\end{itemize}
+Fixing block 0 as the red block collapses the space by an exact factor of 3 (the 3 choices of the red block): from 15,876 to 5,292 models without symmetry breaking, and from 108 to 36 models with symmetry breaking, preserving all 9 isomorphism classes with an exact $147:1$ ratio ($147 = 49 \times 3 = |(\mathbb{Z}_7 \times \mathbb{Z}_7) \rtimes \mathbb{Z}_3|$).
+
+\subsection{Partition Structure and Cost Profile of the 237 Certified Leaves}
+
+The certified refutation of \texttt{ramsey.cnf} is structured as a disjunctive partition of 237 leaves:
+\begin{itemize}
+    \item \textbf{226 Direct Leaves:} Certified directly via CaDiCaL 1.9.5 and verified by \texttt{drat-trim}.
+    \item \textbf{Leaf 214 (Weight $2^{-9}$):} Subdivided into 4 subcubes of weight $2^{-11}$ each; subcube \texttt{c214\_m0} required 709.05~s in CaDiCaL emitting a 235.38~MiB DRAT trace, certified by \texttt{drat-trim} in 843.06~s (combined 1,552.10~s; \path{manifest_ramsey_c214.json}).
+    \item \textbf{Leaf 202 (Weight $2^{-10}$):} Subdivided into 7 subcubes (3 of weight $2^{-12}$ and 4 of weight $2^{-14}$); subcube \texttt{c202\_m0\_s2} required 1,893.00~s in CaDiCaL emitting a 500.84~MiB DRAT trace, certified by \texttt{drat-trim} in 3,419.80~s (combined 5,312.80~s; \path{manifest_ramsey_c202.json}).
+\end{itemize}
+All 237 leaves are mutually orthogonal (pairwise checked across all $\binom{237}{2} = 27,966$ pairs), and their exact rational weights sum strictly to $\sum_{i=1}^{237} 2^{-|c_i|} = \frac{1}{1} = 1.0$. The master manifest is sealed under SHA-256 \sha{56ba1d74b3c2f016b9bb21e89bed06384550e840d9279c133b48abe24e5fd39c}.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.68\linewidth]{fig_depth.pdf}
+  \caption{Distribution of cube lengths $|c|$ (number of assigned literals) across the 237 certified partition leaves. Depths range from $|c|=6$ (53 leaves of weight $2^{-6} = 1/64$) to $|c|=21$ (8 leaves of weight $2^{-21}$), with a median depth of 10. The pairwise disjoint cubes satisfy $\sum_{i=1}^{237} 2^{-|c_i|} = 1.0$, guaranteeing a complete partition of the search space.}
+  \label{fig:depth}
+\end{figure}
+
+As illustrated in Figure \ref{fig:depth}, the lookahead partition decomposes the space into 237 mutually orthogonal cubes spanning depths from $|c|=6$ to $|c|=21$, whose rational weights satisfy $\sum_{i=1}^{237} 2^{-|c_i|} = 1.0$.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.82\linewidth]{fig_cost.pdf}
+  \caption{Empirical verification cost per leaf across the 237 certified partition subproblems: DRAT proof trace size (KiB, $\log$ scale) versus combined CaDiCaL solver and \texttt{drat-trim} verification runtime (seconds, $\log$ scale), with points colored by cube length $|c|$. The vast majority of leaves are computationally inexpensive (median runtime 6.86~s; 166 leaves require $<1$~KiB proof trace and $<15$~s), while computational effort is heavily concentrated in a small tail: the top 3 most demanding leaves (\texttt{direct\_leaf\_19}, \texttt{c202\_m0\_s2}, and \texttt{direct\_leaf\_175}) consume 15,458.12~s (4.29~h), accounting for 20.7\% of the total runtime (4.29~h out of 20.72~h). Leaf \texttt{direct\_leaf\_211} produced the single largest individual DRAT proof trace (613.6~MiB / 628,308~KiB), while \texttt{c214\_m0} highlights an adaptive subdivision leaf.}
+  \label{fig:cost}
+\end{figure}
+
+Figure \ref{fig:cost} details the verification cost per leaf. The computational effort across the 237 leaves is highly non-uniform: while the median verification runtime per leaf is merely 6.86 seconds (154 of the 237 leaves, or 65.0\%, require less than 10 seconds, and 179 leaves, or 75.5\%, require less than 60 seconds; 166 leaves emit trivial proof traces of less than 1 KiB), a small subset of leaves accounts for the bulk of the computational expenditure. 
+
+The three most computationally intensive leaves---\texttt{direct\_leaf\_19} (5,398.58~s; 192.1~MiB), \texttt{c202\_m0\_s2} (5,312.80~s; 500.8~MiB), and \texttt{direct\_leaf\_175} (4,746.74~s; 362.8~MiB)---require a combined 15,458.12 seconds (4.29 hours), accounting for \textbf{20.7\% of the total verification runtime (4.29~h out of 20.72~h)}. In addition, \texttt{direct\_leaf\_211} emitted the single largest individual DRAT trace at 613.58~MiB (3,059.44~s combined runtime), and \texttt{c214\_m0} required 1,552.10~s (709.05~s CaDiCaL + 843.06~s \texttt{drat-trim}) with a 235.38~MiB trace.
+
+Table \ref{tab:leaf_cost} summarizes the verification profiles of these five key partition leaves alongside aggregate metrics for the full 237-leaf partition. While shallow cubes (such as \texttt{direct\_leaf\_19} with $|c|=6$, carrying a weight of $2^{-6} = 1/64$ and requiring 90.0 minutes) naturally leave a larger unassigned propositional subspace for the CDCL solver to refute, empirical observation indicates that cube depth alone does not determine hardness: deep leaves can also exhibit substantial runtimes (e.g., \texttt{c202\_m0\_s2} with $|c|=14$ and \texttt{direct\_leaf\_175} with $|c|=15$, requiring 88.5 and 79.1 minutes respectively). We do not claim an analytical model for the hardness variance across individual branches; the observed distribution is reported directly from empirical execution logs.
+
+\begin{table}[h!]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Leaf Identifier} & $|c|$ & \textbf{Weight} & \textbf{Solver (s)} & \textbf{Checker (s)} & \textbf{Total Time (s)} & \textbf{DRAT Trace (MiB)} \\
+\midrule
+\texttt{direct\_leaf\_19}   & 6  & $2^{-6}$  & 1,337.08 & 4,061.50 & 5,398.58 (90.0 min) & 192.1 MiB \\
+\texttt{c202\_m0\_s2}       & 14 & $2^{-14}$ & 1,893.00 & 3,419.80 & 5,312.80 (88.5 min) & 500.8 MiB \\
+\texttt{direct\_leaf\_175}  & 15 & $2^{-15}$ & 1,667.29 & 3,079.45 & 4,746.74 (79.1 min) & 362.8 MiB \\
+\texttt{direct\_leaf\_211}  & 9  & $2^{-9}$  & 1,127.43 & 1,932.01 & 3,059.44 (51.0 min) & 613.6 MiB \\
+\texttt{c214\_m0}           & 11 & $2^{-11}$ &   709.05 &   843.06 & 1,552.10 (25.9 min) & 235.4 MiB \\
+\midrule
+\textbf{Top 3 Sum}          & --- & --- & 4,897.37 & 10,560.75 & 15,458.12 (4.29 h) & 1,055.7 MiB \\
+\textbf{All 237 Leaves}     & [6, 21] & $1.0$ & 28,095.32 & 46,496.80 & 74,592.12 (20.72 h) & 5.97 GiB (6,109.5 MiB) \\
+\bottomrule
+\end{tabular}
+\caption{Computational cost profile for key partition leaves and aggregate totals across the 237 certified leaves. Runtimes reflect wall-clock execution under concurrent worker load (4 parallel container workers on Intel Core i7-13700H and cloud verification instances).}
+\label{tab:leaf_cost}
+\end{table}
+
+\section{Trusted Computing Base (TCB) \& Reproducibility}
+
+The mathematical confidence in this certified result rests upon the integrity of the following explicit components:
+\begin{enumerate}
+    \item \textbf{SAT Solver:} CaDiCaL 1.9.5 (official release, static x86\_64 binary, SHA-256 \sha{af341326dea417f4070cc0d2c7e3b7ccf4b1a5980e5896948965f786a17f97be}; see Biere et al.~\cite{biere2024} for the canonical reference of the CaDiCaL solver series).
+    \item \textbf{Proof Trace Verifier:} \texttt{drat-trim} \cite{wetzler2014} (compiled with GCC, SHA-256 \sha{f0416375a8c99c67c267994bc186c0dbe44692e580681725e959264d711de15f}), executed with timeout flag \texttt{-t 20000}.
+    \item \textbf{Isolated Environment:} Docker image \texttt{vektor-sat-verifier} (Image ID \sha{sha256:80e44510f3a2435657deb7711be64d0e1e534901e43c80c9df87e6953f2945c5}).
+    \item \textbf{Partition Splitter:} Deterministic internal Python lookahead splitter (\texttt{choose\_split\_vars} and \texttt{make\_children} in \path{core/cube_conquer_worker.py}) evaluating the propagation score $(|\text{prop}(x)|+1)(|\text{prop}(\neg x)|+1)$ via CaDiCaL's \texttt{solver.propagate(assumptions=...)}.
+    \item \textbf{Artifacts \& Computational Expenditure:} Complete proof traces comprise 5.97~GiB across all 237 leaves, requiring 7.80~hours of CaDiCaL solver runtime and 12.92~hours of \texttt{drat-trim} verification (total 20.72~hours). The complete reproduction bundle---comprising the base formula \path{ramsey.cnf}, the 237 certified partition cubes (\path{ramsey_cubes_237.icnf}), the lookahead splitting script (\path{core/cube_conquer_worker.py}), the JSON manifests (\path{manifest_ramsey_complete_237_leaves.json}, \path{manifest_ramsey_c214.json}, \path{manifest_ramsey_c202.json}), verification scripts (\path{scripts/test_all_137514_orbits_exhaustive.py}, \path{scripts/test_encoder_boundary_and_low_cliques.py}, \path{scripts/verify_symmetry_breaking_pairs.py}), figure generation scripts (\path{figures/generate_fig_structure.py}, \path{figures/generate_fig_depth.py}, \path{figures/generate_fig_cost.py}), and trace verification drivers---is maintained in the open public repository (\url{https://github.com/diaztapiarodrigo/ramsey-r55-z7-refutation}); an archival deposit on Zenodo will be established upon publication.
+    \item \textbf{Line Endings \& File Hashes:} The canonical file \texttt{ramsey.cnf} is distributed with UNIX LF line endings (size 10,347,775 bytes, SHA-256 \sha{0a9fc55ec9a2bcbab3a27fdc77619732113a5163ac555b7e506b3b5ad5c31485}). In Windows environments with CRLF endings, the size is 10,623,384 bytes (SHA-256 \sha{b055bde4271755e718fd7db964e3f4a11f59ce943af3506c7ac92e17ac3ccb8e}).
+\end{enumerate}
+
+\section*{Acknowledgments \& Methodological Declaration}
+In compliance with arXiv's policy on generative AI tools, the author discloses that the Antigravity agentic coding environment (Google DeepMind) was employed to assist in software engineering, including automating SAT solver dispatch, managing proof-checking pipelines, and scripting data analysis routines. All mathematical reductions, symmetry breaking proofs, combinatorial formulations, and final verification decisions remain the sole responsibility of the author.
+
+\begin{thebibliography}{99}
+
+\bibitem{exoo1989}
+G.~Exoo.
+\newblock A lower bound for $r(5, 5)$.
+\newblock \emph{Journal of Graph Theory}, 13(1):97--98, 1989.
+\newblock DOI: \href{https://doi.org/10.1002/jgt.3190130113}{10.1002/jgt.3190130113}.
+
+\bibitem{greenwood1955}
+R.~E. Greenwood and A.~M. Gleason.
+\newblock Combinatorial relations and chromatic graphs.
+\newblock \emph{Canadian Journal of Mathematics}, 7:1--7, 1955.
+\newblock DOI: \href{https://doi.org/10.4153/CJM-1955-001-4}{10.4153/CJM-1955-001-4}.
+
+\bibitem{kalbfleisch1966}
+J.~G. Kalbfleisch.
+\newblock \emph{Chromatic Graphs and Ramsey's Theorem}.
+\newblock PhD thesis, University of Waterloo, 1966.
+
+\bibitem{mckay1995}
+B.~D. McKay and S.~P. Radziszowski.
+\newblock $R(4, 5) = 25$.
+\newblock \emph{Journal of Graph Theory}, 19(3):309--322, 1995.
+\newblock DOI: \href{https://doi.org/10.1002/jgt.3190190304}{10.1002/jgt.3190190304}.
+
+\bibitem{mckay1997}
+B.~D. McKay and S.~P. Radziszowski.
+\newblock Subgraph counting identities and Ramsey numbers.
+\newblock \emph{Journal of Combinatorial Theory, Series B}, 69(2):193--209, 1997.
+\newblock DOI: \href{https://doi.org/10.1006/jctb.1996.1741}{10.1006/jctb.1996.1741}.
+
+\bibitem{mckay_ramsey_data}
+B.~D. McKay.
+\newblock Combinatorial data: Ramsey graphs.
+\newblock Australian National University, \url{https://users.cecs.anu.edu.au/~bdm/data/ramsey.html}. Accessed October 2026.
+
+\bibitem{angeltveit2018}
+V.~Angeltveit and B.~D. McKay.
+\newblock $R(5,5) \le 48$.
+\newblock \emph{Journal of Graph Theory}, 89(1):5--13, 2018.
+\newblock DOI: \href{https://doi.org/10.1002/jgt.22235}{10.1002/jgt.22235}.
+\newblock arXiv: \href{https://arxiv.org/abs/1703.08768}{1703.08768}.
+
+\bibitem{angeltveit2024}
+V.~Angeltveit and B.~D. McKay.
+\newblock $R(5,5) \le 46$.
+\newblock \emph{Journal of Graph Theory}, 112(3):198--208, 2026.
+\newblock DOI: \href{https://doi.org/10.1002/jgt.70029}{10.1002/jgt.70029}.
+\newblock arXiv: \href{https://arxiv.org/abs/2409.15709}{2409.15709}.
+
+\bibitem{radziszowski2021}
+S.~P. Radziszowski.
+\newblock Small Ramsey numbers.
+\newblock \emph{Electronic Journal of Combinatorics}, Dynamic Survey DS1, revision 16, 2021.
+
+\bibitem{exoo2015}
+G.~Exoo and M.~Tatarevic.
+\newblock New lower bounds for 28 classical Ramsey numbers.
+\newblock \emph{Electronic Journal of Combinatorics}, 22(3):\#P3.11, 2015.
+\newblock DOI: \href{https://doi.org/10.37236/5254}{10.37236/5254}.
+\newblock arXiv: \href{https://arxiv.org/abs/1504.02403}{1504.02403}.
+
+\bibitem{heule2016}
+M.~J.~H. Heule, O.~Kullmann, and V.~W. Marek.
+\newblock Solving and verifying the boolean pythagorean triples problem via cube-and-conquer.
+\newblock In \emph{Theory and Applications of Satisfiability Testing (SAT 2016)}, LNCS 9710, pages 228--245. Springer, 2016.
+\newblock DOI: \href{https://doi.org/10.1007/978-3-319-40970-2_15}{10.1007/978-3-319-40970-2\_15}.
+
+\bibitem{biere2024}
+A.~Biere, T.~Faller, K.~Fazekas, M.~Fleury, N.~Froleyks, and F.~Pollitt.
+\newblock CaDiCaL 2.0.
+\newblock In \emph{Computer Aided Verification (CAV 2024)}, LNCS 14681, pages 133--152. Springer, 2024.
+\newblock DOI: \href{https://doi.org/10.1007/978-3-031-65627-9_7}{10.1007/978-3-031-65627-9\_7}.
+
+\bibitem{wetzler2014}
+N.~Wetzler, M.~J.~H. Heule, and W.~A. Hunt~Jr.
+\newblock DRAT-trim: Efficient checking and trimming using expressive clausal proofs.
+\newblock In \emph{Theory and Applications of Satisfiability Testing (SAT 2014)}, LNCS 8561, pages 422--429. Springer, 2014.
+\newblock DOI: \href{https://doi.org/10.1007/978-3-319-09284-3_31}{10.1007/978-3-319-09284-3\_31}.
+
+\end{thebibliography}
+
+\end{document}

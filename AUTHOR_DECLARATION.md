@@ -1,7 +1,8 @@
 # Formal Declaration of Intellectual Priority and Scientific Authorship
 
 **Work Title:** *On the Non-Existence of $(5,5,43)$-Ramsey Graphs under Order-7 Automorphisms with a Unique Fixed Point: A Certified Cube-and-Conquer Refutation*  
-**Author:** Rodrigo Díaz Tapia  
+**Author:** Rodrigo Emilio Díaz Tapia  
+**ORCID:** [0009-0007-8910-797X](https://orcid.org/0009-0007-8910-797X)  
 **Affiliation:** Independent Researcher, Santiago, Chile  
 **Contact:** `diaztapiarodrigo@gmail.com`  
 **Date of Declaration & Sealing:** October 19, 2026 (14:30:00 UTC-3)  
@@ -12,7 +13,7 @@
 
 ## 1. Statement of Discovery & Scientific Claims
 
-I, **Rodrigo Díaz Tapia**, declare sole scientific authorship of the research, combinatorial formulations, analytical reductions, and computational refutations presented in this work, establishing:
+I, **Rodrigo Emilio Díaz Tapia** (ORCID: `0009-0007-8910-797X`), declare sole scientific authorship of the research, combinatorial formulations, analytical reductions, and computational refutations presented in this work, establishing:
 
 1. **Analytical Degree Rigidity Theorem:** Deduction from $R(4,5)=25$ that any hypothetical $(5,5,43)$-Ramsey graph invariant under an order-7 automorphism with a unique fixed point ($f=1, B=6$) unconditionally forces the fixed vertex to connect to exactly 3 orbits in red and 3 orbits in blue ($\text{deg}_{\text{red}}(0) = 21, \text{deg}_{\text{blue}}(0) = 21$), leaving zero degrees of freedom at the fixed point.
 2. **Algebraic Symmetry Reduction Scheme:** Formal formulation of:

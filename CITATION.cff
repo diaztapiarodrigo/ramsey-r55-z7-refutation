@@ -2,7 +2,8 @@ cff-version: 1.2.0
 message: "If you use this work or data, please cite it as below."
 authors:
   - family-names: "Díaz Tapia"
-    given-names: "Rodrigo"
+    given-names: "Rodrigo Emilio"
+    orcid: "https://orcid.org/0009-0007-8910-797X"
     affiliation: "Independent Researcher, Santiago, Chile"
     email: "diaztapiarodrigo@gmail.com"
 title: "On the Non-Existence of (5,5,43)-Ramsey Graphs under Order-7 Automorphisms with a Unique Fixed Point: A Certified Cube-and-Conquer Refutation"

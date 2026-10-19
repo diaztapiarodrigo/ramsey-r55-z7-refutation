@@ -5,7 +5,8 @@
   "description": "<p>Using Cube-and-Conquer with DRAT proof traces verified by drat-trim, we show that the boolean formula encoding (5,5)-Ramsey graphs on 43 vertices admitting an automorphism of order 7 with exactly one fixed point is unsatisfiable (237 disjoint cubes of total weight 1, each certified on the identical base formula). We prove that the fixed vertex must have degree 21 (split into 3 red and 3 blue orbits) as an analytical deduction from R(4,5)=25, and provide an analytical proof sketch for the soundness of the lexicographic symmetry breaking constraints (submitted for independent peer review and tested empirically on smaller orders). Consequently, the computational result establishes the non-existence of (5,5,43)-graphs in this symmetric family, conditional upon the correctness of the boolean encoder of forbidden subgraphs and symmetry breaking constraints.</p><p>This deposition contains the full preprint, reproduction scripts, the 237 certified disjoint partition cubes, and cryptographic manifests.</p>",
   "creators": [
     {
-      "name": "Díaz Tapia, Rodrigo",
+      "name": "Díaz Tapia, Rodrigo Emilio",
+      "orcid": "0009-0007-8910-797X",
       "affiliation": "Independent Researcher, Santiago, Chile"
     }
   ],
