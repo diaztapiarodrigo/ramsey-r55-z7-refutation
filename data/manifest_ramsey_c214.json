@@ -1,0 +1,81 @@
+{
+  "target": "ramsey_r55_z7f1_n43_cube_214",
+  "parent_cube_id": 214,
+  "parent_cube_assumptions": [
+    -112,
+    113,
+    114,
+    -121,
+    122,
+    -123,
+    1,
+    -26,
+    3
+  ],
+  "split_vars": [
+    8,
+    14
+  ],
+  "timestamp_iso": "2026-10-18T18:40:07Z",
+  "total_children": 4,
+  "all_certified_unsat": true,
+  "children": [
+    {
+      "leaf": "c214_m0",
+      "mask": 0,
+      "verdict": "CERTIFIED_UNSAT",
+      "cadical_returncode": 20,
+      "solver_seconds": 709.046,
+      "drat_trim_seconds": 843.057,
+      "cnf_bytes": 10347839,
+      "cnf_sha256": "b4aa3dc7da1f2510fc3d448cd5bea8bf9aa0b405e850f7ad7e4778345285d09e",
+      "drat_bytes": 246814940,
+      "drat_sha256": "6991606b7ec92e5480c4ec03e22605a0d75f63ceb847a84db6f422f793d4bcae",
+      "weight": 0.00048828125,
+      "base_sha256": "b055bde4271755e718fd7db964e3f4a11f59ce943af3506c7ac92e17ac3ccb8e"
+    },
+    {
+      "leaf": "c214_m1",
+      "mask": 1,
+      "verdict": "CERTIFIED_UNSAT",
+      "cadical_returncode": 20,
+      "solver_seconds": 1.406,
+      "drat_trim_seconds": 3.214,
+      "cnf_bytes": 10347838,
+      "cnf_sha256": "4010aeac6e434661c45510bdb189ca117e2ea77827d72236b4c03519aea22bea",
+      "drat_bytes": 123,
+      "drat_sha256": "f993508d22b30e641c1b8be0053b82ac193195db9361b6641ceffb1d81867167",
+      "weight": 0.00048828125,
+      "base_sha256": "b055bde4271755e718fd7db964e3f4a11f59ce943af3506c7ac92e17ac3ccb8e"
+    },
+    {
+      "leaf": "c214_m2",
+      "mask": 2,
+      "verdict": "CERTIFIED_UNSAT",
+      "cadical_returncode": 20,
+      "solver_seconds": 2.19,
+      "drat_trim_seconds": 3.606,
+      "cnf_bytes": 10347838,
+      "cnf_sha256": "3249497ebdf756a646d3f7a146fdb73c24f9037791acfac8a54651543f6783ff",
+      "drat_bytes": 93,
+      "drat_sha256": "b2bac8d4438bfeb2e74628f19cc26fc5b7a3820b2e2b053b282911997dad3d0f",
+      "weight": 0.00048828125,
+      "base_sha256": "b055bde4271755e718fd7db964e3f4a11f59ce943af3506c7ac92e17ac3ccb8e"
+    },
+    {
+      "leaf": "c214_m3",
+      "mask": 3,
+      "verdict": "CERTIFIED_UNSAT",
+      "cadical_returncode": 20,
+      "solver_seconds": 2.112,
+      "drat_trim_seconds": 3.649,
+      "cnf_bytes": 10347837,
+      "cnf_sha256": "f91837dd20847f73f71d65bbdbb86dd536a86145abaa1bf2b759cef8a64e6371",
+      "drat_bytes": 82,
+      "drat_sha256": "27e03cba7d4a23c2777d36c2b897eafffe23f4133d65bb8d044ba6f69b171b79",
+      "weight": 0.00048828125,
+      "base_sha256": "b055bde4271755e718fd7db964e3f4a11f59ce943af3506c7ac92e17ac3ccb8e"
+    }
+  ],
+  "base_sha256": "b055bde4271755e718fd7db964e3f4a11f59ce943af3506c7ac92e17ac3ccb8e"
+}
