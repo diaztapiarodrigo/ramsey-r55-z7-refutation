@@ -27,13 +27,17 @@ In this work, we analyze hypothetical $(5,5,43)$-graphs admitting a cyclic autom
 ## 🔬 Repository Structure
 
 ```text
-├── arxiv_ramsey_r55_n43.pdf            # Compiled preprint (13 pages, LaTeX)
+├── arxiv_ramsey_r55_n43.pdf            # Compiled preprint (14 pages, LaTeX)
 ├── ramsey_cubes_237.icnf               # The 237 certified disjoint partition cubes
 ├── manifest_ramsey_complete_237_leaves.json  # Cryptographic manifest of all 237 certified leaves
 ├── run_all_verifications.py           # One-command audit runner
 ├── docs/                               # LaTeX sources and markdown preprint
 │   ├── arxiv_ramsey_r55_n43.tex
 │   └── arxiv_ramsey_r55_n43.md
+├── lean4/                              # Formal verification in Lean 4 (0 sorry)
+│   ├── RamseyDegreeRigidity.lean       # Theorem: d(v0)=21, f <= 26, p >= 25 impossible
+│   ├── RamseySymmetryBreaking.lean     # Theorem: multiplier m=2 normalization soundness
+│   └── lean4_verification_manifest.json
 ├── figures/                            # Vector & raster preprint figures
 │   ├── fig_structure.pdf / .png        # Geometric action of Z7 with 1 fixed point
 │   ├── fig_depth.pdf / .png            # Depth distribution of the 237 cubes

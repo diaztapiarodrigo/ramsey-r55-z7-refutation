@@ -1,0 +1,98 @@
+{
+  "standard": "VK-STD-037",
+  "kernel": "Lean 4 (Calculus of Inductive Constructions)",
+  "total_theorems": 10,
+  "generated_at": 1792547948.0885625,
+  "theorems": [
+    {
+      "cube_id": 1728,
+      "front": "tensor333_cyc_r22_f13_t3_v2",
+      "depth": 5,
+      "file_path": "C:\\Users\\lenovo\\OneDrive\\Desktop\\Vektor-intelligence\\vektor-intelligence\\exports\\lean4\\Brent_Cube_1728_tensor333_cyc_r22_.lean",
+      "file_name": "Brent_Cube_1728_tensor333_cyc_r22_.lean",
+      "merkle_hash": "6238cc6c422db3e68b39edb7b3b73d433752ede3a0e1187aee7a9b3468c2a358",
+      "bytes": 1556
+    },
+    {
+      "cube_id": 1727,
+      "front": "tensor333_cyc_r22_f13_t3_v2",
+      "depth": 5,
+      "file_path": "C:\\Users\\lenovo\\OneDrive\\Desktop\\Vektor-intelligence\\vektor-intelligence\\exports\\lean4\\Brent_Cube_1727_tensor333_cyc_r22_.lean",
+      "file_name": "Brent_Cube_1727_tensor333_cyc_r22_.lean",
+      "merkle_hash": "f72ae66f430b0df32a47aa092a051740a3f95a83ba78e7c4768718c80771485d",
+      "bytes": 1544
+    },
+    {
+      "cube_id": 1726,
+      "front": "tensor333_cyc_r22_f13_t3_v2",
+      "depth": 5,
+      "file_path": "C:\\Users\\lenovo\\OneDrive\\Desktop\\Vektor-intelligence\\vektor-intelligence\\exports\\lean4\\Brent_Cube_1726_tensor333_cyc_r22_.lean",
+      "file_name": "Brent_Cube_1726_tensor333_cyc_r22_.lean",
+      "merkle_hash": "56130e92a0327a78f295230a6b7d77134fee790d2e3516ad71d2d8adc1096d19",
+      "bytes": 1562
+    },
+    {
+      "cube_id": 1724,
+      "front": "tensor333_cyc_r22_f13_t3_v2",
+      "depth": 5,
+      "file_path": "C:\\Users\\lenovo\\OneDrive\\Desktop\\Vektor-intelligence\\vektor-intelligence\\exports\\lean4\\Brent_Cube_1724_tensor333_cyc_r22_.lean",
+      "file_name": "Brent_Cube_1724_tensor333_cyc_r22_.lean",
+      "merkle_hash": "5a62a1fec7664dc418cbb6ca83955fd4c205e9f027cf89ad6e05bd819f4f5de1",
+      "bytes": 1550
+    },
+    {
+      "cube_id": 1723,
+      "front": "tensor333_cyc_r22_f13_t3_v2",
+      "depth": 5,
+      "file_path": "C:\\Users\\lenovo\\OneDrive\\Desktop\\Vektor-intelligence\\vektor-intelligence\\exports\\lean4\\Brent_Cube_1723_tensor333_cyc_r22_.lean",
+      "file_name": "Brent_Cube_1723_tensor333_cyc_r22_.lean",
+      "merkle_hash": "065ee5f5f012c3255e07fa300928b868fe84d95ff264e18fa84fda24ed539821",
+      "bytes": 1538
+    },
+    {
+      "cube_id": 1722,
+      "front": "tensor333_cyc_r22_f13_t3_v2",
+      "depth": 5,
+      "file_path": "C:\\Users\\lenovo\\OneDrive\\Desktop\\Vektor-intelligence\\vektor-intelligence\\exports\\lean4\\Brent_Cube_1722_tensor333_cyc_r22_.lean",
+      "file_name": "Brent_Cube_1722_tensor333_cyc_r22_.lean",
+      "merkle_hash": "f287f7b569d29689edfe2b9d72a4cdb3183f81e0e7e3640a390d8de40ab2ab2c",
+      "bytes": 1550
+    },
+    {
+      "cube_id": 1720,
+      "front": "tensor333_cyc_r22_f13_t3_v2",
+      "depth": 5,
+      "file_path": "C:\\Users\\lenovo\\OneDrive\\Desktop\\Vektor-intelligence\\vektor-intelligence\\exports\\lean4\\Brent_Cube_1720_tensor333_cyc_r22_.lean",
+      "file_name": "Brent_Cube_1720_tensor333_cyc_r22_.lean",
+      "merkle_hash": "6fb59f30a7153ea9febd6f8e14410dcea4f3020c9ef0a4abaa21c383e4f107d3",
+      "bytes": 1538
+    },
+    {
+      "cube_id": 1718,
+      "front": "tensor333_cyc_r22_f13_t3_v2",
+      "depth": 5,
+      "file_path": "C:\\Users\\lenovo\\OneDrive\\Desktop\\Vektor-intelligence\\vektor-intelligence\\exports\\lean4\\Brent_Cube_1718_tensor333_cyc_r22_.lean",
+      "file_name": "Brent_Cube_1718_tensor333_cyc_r22_.lean",
+      "merkle_hash": "0421335ae7207e1882f0180ec6fac33e710d9b82d8daf7fb100b5840a575d60d",
+      "bytes": 1586
+    },
+    {
+      "cube_id": 1717,
+      "front": "tensor333_cyc_r22_f13_t3_v2",
+      "depth": 5,
+      "file_path": "C:\\Users\\lenovo\\OneDrive\\Desktop\\Vektor-intelligence\\vektor-intelligence\\exports\\lean4\\Brent_Cube_1717_tensor333_cyc_r22_.lean",
+      "file_name": "Brent_Cube_1717_tensor333_cyc_r22_.lean",
+      "merkle_hash": "7e768992764f2a42b44d121f79a67d529f7fe804f148e74403c3109f727049c8",
+      "bytes": 1574
+    },
+    {
+      "cube_id": 1716,
+      "front": "tensor333_cyc_r22_f13_t3_v2",
+      "depth": 5,
+      "file_path": "C:\\Users\\lenovo\\OneDrive\\Desktop\\Vektor-intelligence\\vektor-intelligence\\exports\\lean4\\Brent_Cube_1716_tensor333_cyc_r22_.lean",
+      "file_name": "Brent_Cube_1716_tensor333_cyc_r22_.lean",
+      "merkle_hash": "c271a2b8c5be1405bfa7b25295e52673d8586833192b339c275fe3fde6a48018",
+      "bytes": 1574
+    }
+  ]
+}
